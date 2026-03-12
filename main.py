@@ -1,23 +1,36 @@
+import csv
 from algorithms.fifo import fifo
 from algorithms.lru import lru
 from algorithms.optimal import optimal
 from utils.metrics import compute_metrics
 from utils.reference_generator import generate_random_reference
+from ml.dataset_generator import generate_dataset
 
+generate_dataset()
 def run():
-    reference_string = generate_random_reference(20,8)
+    file=open("data/results.csv","w",newline="")
+    writer=csv.writer(file)
+    writer.writerow([
+    "experiment",
+    "reference_string",
+    "fifo_faults",
+    "lru_faults",
+    "optimal_faults"
+])
     frame_size=3
-    fifo_faults=fifo(reference_string,frame_size)
-    lru_faults=lru(reference_string,frame_size)
-    optimal_faults=optimal(reference_string,frame_size)
-    fifo_metrics = compute_metrics(fifo_faults, len(reference_string))
-    lru_metrics = compute_metrics(lru_faults, len(reference_string))
-    optimal_metrics = compute_metrics(optimal_faults, len(reference_string))
-    print("Reference String:", reference_string)
-    print("Frame Size:", frame_size)
-    print("FIFO:", fifo_metrics)
-    print("LRU:", lru_metrics)
-    print("Optimal:", optimal_metrics)
+    for i in range(10):
+        reference_string = generate_random_reference(20,8)
+        fifo_faults=fifo(reference_string,frame_size)
+        lru_faults=lru(reference_string,frame_size)
+        optimal_faults=optimal(reference_string,frame_size)
+        writer.writerow([
+        i+1,
+        reference_string,
+        fifo_faults,
+        lru_faults,
+        optimal_faults
+    ])
+    file.close()
 
 
 if __name__ == "__main__":
